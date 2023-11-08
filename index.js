@@ -81,6 +81,15 @@ async function run() {
     })
 
 
+    // food related API
+    app.post('/foods', async(req, res) =>{
+      const food = req.body;
+      console.log(food);
+      const result = await foodCollection.insertOne(food);
+      res.send(result);
+    })
+
+
 
 
 

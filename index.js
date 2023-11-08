@@ -82,6 +82,13 @@ async function run() {
 
 
     // food related API
+
+    app.get('/foods', async(req, res) =>{
+      const cursor = foodCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
     app.post('/foods', async(req, res) =>{
       const food = req.body;
       console.log(food);

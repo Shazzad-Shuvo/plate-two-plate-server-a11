@@ -4,7 +4,7 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 
 // middleware
@@ -56,6 +56,7 @@ async function run() {
     // await client.connect();
 
     const foodCollection = client.db('foodDonate').collection('foods');
+    const foodRequestCollection = client.db('foodDonate').collection('foodRequests');
 
 
     // auth related API
@@ -89,10 +90,26 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/foods/:id', async(req, res) =>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await foodCollection.findOne(query);
+      res.send(result);
+    })
+
     app.post('/foods', async(req, res) =>{
       const food = req.body;
       console.log(food);
       const result = await foodCollection.insertOne(food);
+      res.send(result);
+    })
+
+
+    // food request API
+    app.post('/foodRequests', async(req, res) =>{
+      const foodRequest = req.body;
+      console.log(foodRequest);
+      const result = await foodRequestCollection.insertOne(foodRequest);
       res.send(result);
     })
 

@@ -84,20 +84,20 @@ async function run() {
 
     // food related API
 
-    app.get('/foods', async(req, res) =>{
+    app.get('/foods', async (req, res) => {
       const cursor = foodCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     })
 
-    app.get('/foods/:id', async(req, res) =>{
+    app.get('/foods/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)};
+      const query = { _id: new ObjectId(id) };
       const result = await foodCollection.findOne(query);
       res.send(result);
     })
 
-    app.post('/foods', async(req, res) =>{
+    app.post('/foods', async (req, res) => {
       const food = req.body;
       console.log(food);
       const result = await foodCollection.insertOne(food);
@@ -106,7 +106,22 @@ async function run() {
 
 
     // food request API
-    app.post('/foodRequests', async(req, res) =>{
+
+    app.get('/foodRequests', verifyToken, async (req, res) => {
+      // console.log(req.query.email);
+      // console.log('Token owner:', req.user);
+      if (req.user.email !== req.query.email) {
+        return res.status(403).send({ message: 'Forbidden Access' });
+      }
+      let query = {};
+      if (req.query?.email) {
+        query = { requesterEmail: req.query.email }
+      }
+      const result = await foodRequestCollection.find(query).toArray();
+      res.send(result);
+    })
+
+    app.post('/foodRequests', async (req, res) => {
       const foodRequest = req.body;
       console.log(foodRequest);
       const result = await foodRequestCollection.insertOne(foodRequest);

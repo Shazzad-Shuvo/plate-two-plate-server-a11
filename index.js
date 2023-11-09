@@ -84,6 +84,28 @@ async function run() {
 
     // food related API
 
+    app.get('/donorFoods', verifyToken, async (req, res) => {
+      console.log(req.query.email);
+      console.log('Token owner:', req.user);
+      if (req.user.email !== req.query.email) {
+        return res.status(403).send({ message: 'Forbidden Access' });
+      }
+      let query = {};
+      if (req.query?.email) {
+        query = { donorEmail: req.query.email }
+      }
+      const result = await foodCollection.find(query).toArray();
+      res.send(result);
+    })
+
+    app.delete('/donorFoods/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await foodCollection.deleteOne(query);
+      res.send(result);
+    })
+
+
     app.get('/foods', async (req, res) => {
       const cursor = foodCollection.find();
       const result = await cursor.toArray();
@@ -105,8 +127,9 @@ async function run() {
     })
 
 
-    // food request API
 
+
+    // food request API
     app.get('/foodRequests', verifyToken, async (req, res) => {
       // console.log(req.query.email);
       // console.log('Token owner:', req.user);

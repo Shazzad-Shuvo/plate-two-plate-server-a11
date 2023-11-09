@@ -83,6 +83,18 @@ async function run() {
 
 
     // food related API
+    app.get('/filterFoods', async(req, res) =>{
+      console.log(req.query.name);
+      const regexPattern = new RegExp(`^${req.query.name}$`, 'i');
+      const filter = {foodName: { $regex: regexPattern }};
+      const result = await foodCollection.find(filter).toArray();
+      res.send(result);
+    })
+
+    // app.get('/sortFoods', async(req, res) =>{
+
+    // })
+
 
     app.get('/donorFoods', verifyToken, async (req, res) => {
       console.log(req.query.email);
@@ -126,7 +138,27 @@ async function run() {
       res.send(result);
     })
 
+    app.put('/foods/:id', async (req, res) => {
+      const id = req.params.id;
+      const food = req.body;
+      console.log(food);
+      const filter = { _id: new ObjectId(id) };
 
+      const options = { upsert: true };
+      const updatedFood = {
+        $set: {
+          foodName: food.foodName,
+          quantity: food.quantity,
+          expireDate: food.expireDate,
+          pickupLocation: food.pickupLocation,
+          note: food.note,
+          photo: food.photo
+        }
+      };
+
+      const result = await foodCollection.updateOne(filter, updatedFood, options);
+      res.send(result);
+    })
 
 
     // food request API
@@ -144,10 +176,31 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/foodRequests/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { requestedFoodId: id }
+      const result = await foodRequestCollection.findOne(query);
+      res.send(result);
+    })
+
     app.post('/foodRequests', async (req, res) => {
       const foodRequest = req.body;
       console.log(foodRequest);
       const result = await foodRequestCollection.insertOne(foodRequest);
+      res.send(result);
+    })
+
+    app.patch('/foodRequests/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const deliver = req.body;
+      console.log(deliver);
+      const updateDoc = {
+        $set: {
+          status: deliver.status
+        },
+      };
+      const result = await foodRequestCollection.updateOne(filter, updateDoc);
       res.send(result);
     })
 

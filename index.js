@@ -10,8 +10,10 @@ const port = process.env.PORT || 5000;
 // middleware
 app.use(cors({
   origin: [
-    'http://localhost:5173',
-    'http://localhost:5174',
+    // 'http://localhost:5173',
+    // 'http://localhost:5174',
+    'https://plate-two-plate.web.app',
+    'https://plate-two-plate.firebaseapp.com'
   ],
   credentials: true
 }));

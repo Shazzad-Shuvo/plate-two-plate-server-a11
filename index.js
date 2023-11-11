@@ -91,9 +91,13 @@ async function run() {
       res.send(result);
     })
 
-    // app.get('/sortFoods', async(req, res) =>{
+    app.get('/featuredFood', async(req, res) =>{
 
-    // })
+      const result = await foodCollection.find().sort({ quantity: -1 }).limit(6).toArray();
+      res.send(result);
+
+
+    })
 
 
     app.get('/donorFoods', verifyToken, async (req, res) => {
